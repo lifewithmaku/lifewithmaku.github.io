@@ -1,0 +1,267 @@
+const pages = document.querySelectorAll(".page");
+const nextBtns = document.querySelectorAll(".next");
+const prevBtns = document.querySelectorAll(".prev");
+
+let currentPage = 0;
+
+function showPage(index) {
+
+    pages.forEach(page => page.classList.remove("active"));
+
+    pages[index].classList.add("active");
+
+    if (!pages[index].dataset.typed) {
+        typeWriter(pages[index]);
+        pages[index].dataset.typed = "true";
+    }
+
+}
+nextBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+        if (currentPage < pages.length - 1) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    });
+});
+
+prevBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+        if (currentPage > 0) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    });
+});
+
+
+
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+
+function moveNoButton() {
+    const parent = noBtn.parentElement;
+
+    const maxX = parent.clientWidth - noBtn.offsetWidth;
+    const maxY = parent.clientHeight - noBtn.offsetHeight;
+
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+}
+
+noBtn.addEventListener("mouseenter", moveNoButton);
+
+document.addEventListener("mousemove", (e) => {
+
+    const rect = noBtn.getBoundingClientRect();
+
+    const distance = 120;
+
+    if (
+        e.clientX > rect.left - distance &&
+        e.clientX < rect.right + distance &&
+        e.clientY > rect.top - distance &&
+        e.clientY < rect.bottom + distance
+    ) {
+        moveNoButton();
+    }
+
+});
+
+noBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    moveNoButton();
+});
+
+function finishStory() {
+    currentPage = pages.length - 1;
+    showPage(currentPage);
+}
+
+yesBtn.addEventListener("click", finishStory);
+noBtn.addEventListener("click", finishStory);
+
+const hearts = document.getElementById("hearts");
+
+function createHeart() {
+
+    const heart = document.createElement("div");
+
+    heart.className = "heart";
+
+    heart.innerHTML = ["❤", "💕", "💖", "💗", "💓"][Math.floor(Math.random() * 5)];
+
+    heart.style.left = Math.random() * window.innerWidth + "px";
+
+    heart.style.fontSize = (15 + Math.random() * 25) + "px";
+
+    heart.style.animationDuration = (5 + Math.random() * 5) + "s";
+
+    hearts.appendChild(heart);
+
+    setTimeout(() => {
+        heart.remove();
+    }, 10000);
+}
+
+setInterval(createHeart, 350);
+
+const music = document.getElementById("music");
+
+document.addEventListener("click", function startMusic() {
+
+    music.volume = 0.4;
+
+    music.play()
+    .then(() => {
+        console.log("Music started!");
+    })
+    .catch(error => {
+        console.log(error);
+    });
+
+    document.removeEventListener("click", startMusic);
+
+});
+
+const paragraphs = document.querySelectorAll(".page p");
+
+paragraphs.forEach((p) => {
+
+    const text = p.innerHTML;
+
+    p.innerHTML = "";
+
+    p.dataset.text = text;
+
+});
+
+function typeWriter(page){
+
+    const texts = page.querySelectorAll("p");
+
+    texts.forEach((p,index)=>{
+
+        if(p.dataset.typing === "true") return;
+
+        p.dataset.typing = "true";
+
+        const content = p.dataset.text;
+
+        p.innerHTML = "";
+
+        let i = 0;
+
+        setTimeout(()=>{
+
+            const interval = setInterval(()=>{
+
+                if(i >= content.length){
+                    clearInterval(interval);
+                    p.dataset.typing = "false";
+                    return;
+                }
+
+                p.innerHTML += content.charAt(i);
+                i++;
+
+            },18);
+
+        },index * 600);
+
+    });
+
+}
+
+showPage(currentPage);
+
+
+const bouquet = document.getElementById("bouquet");
+const fireworks = document.getElementById("fireworks");
+
+console.log(bouquet);
+console.log(fireworks);
+
+function createFirework(){
+
+    const spark = document.createElement("div");
+
+    spark.className = "firework";
+spark.style.width = "18px";
+spark.style.height = "18px";
+spark.style.borderRadius = "50%";
+spark.style.background = "red";
+
+    const colors = [
+        "#ff5fa2",
+        "#ffd166",
+        "#ffffff",
+        "#ff9ecb",
+        "#ffe066"
+    ];
+
+   const color = colors[Math.floor(Math.random() * colors.length)];
+
+spark.style.background = color;
+spark.style.color = color;
+
+    const box = bouquet.getBoundingClientRect();
+
+    const x =
+        box.left +
+        Math.random()*box.width +
+        (Math.random()-0.5)*120;
+
+    const y =
+        box.top +
+        Math.random()*box.height +
+        (Math.random()-0.5)*120;
+
+    spark.style.left = x + "px";
+    spark.style.top = y + "px";
+
+   console.log("Firework created");
+    fireworks.appendChild(spark);
+
+    setTimeout(()=>{
+        spark.remove();
+    },800);
+
+}
+
+function launchFireworks(){
+
+    let amount = 0;
+
+    const interval = setInterval(()=>{
+
+        createFirework();
+
+        amount++;
+
+        if(amount >= 35){
+            clearInterval(interval);
+        }
+
+    },120);
+
+}
+
+bouquet.addEventListener("click", () => {
+
+    console.log("Bouquet clicked!");
+
+    bouquet.classList.add("glow");
+
+    launchFireworks();
+
+});
+
+window.addEventListener("load", () => {
+    document.getElementById("photo1").src = "pic1.jpg";
+    document.getElementById("photo2").src = "pic2.jpg";
+    document.getElementById("photo3").src = "pic3.jpg";
+});
